@@ -14,7 +14,6 @@ BINS=\
 	mystat \
 
 all: $(OBJS) $(BINS)
-	-/usr/bin/ci -l -m- -t- *.[CH] Makefile
 
 install: all
 	/bin/cp -p dirsize /usr/local/bin/dirsize
