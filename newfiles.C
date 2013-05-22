@@ -12,7 +12,7 @@ using namespace std;
 
 class sizeinfo {
 	public:
-		sizeinfo(const string& fn,const struct stat64& buf,unsigned long long int sz) {
+		sizeinfo(const string& fn,const struct stat& buf,unsigned long long int sz) {
 			_filename = fn;
 			_size = sz;
 			_statinfo = buf;
@@ -30,17 +30,17 @@ class sizeinfo {
 	private:
 		string _filename;
 		unsigned long long int _size;
-		struct stat64 _statinfo;
+		struct stat _statinfo;
 };
 
 void traverse(const char *fn,int restrict,dev_t restricted_to_dev,deque<sizeinfo>& sizes) {
-	struct stat64 buf;
-	if ((0 == lstat64(fn,&buf)) && ((restrict == 0) || (buf.st_dev == restricted_to_dev))) {
+	struct stat buf;
+	if ((0 == lstat(fn,&buf)) && ((restrict == 0) || (buf.st_dev == restricted_to_dev))) {
 		if (S_ISDIR(buf.st_mode)) {
 			DIR *dp = opendir(fn);
 			if (dp) {
-				struct dirent64 *de;
-				while ((de = readdir64(dp)) != NULL) {
+				struct dirent *de;
+				while ((de = readdir(dp)) != NULL) {
 					if (strcmp(de->d_name,"..") && strcmp(de->d_name,".")) {
 						string base = fn;
 						base = base + "/" + de->d_name;
@@ -80,8 +80,8 @@ int main(int argc,char *argv[]) {
 		deque<sizeinfo> sizes;
 
 		for (int i = optind; i < argc; ++i) {
-			struct stat64 buf;
-			if (0 == lstat64(argv[i],&buf)) {
+			struct stat buf;
+			if (0 == lstat(argv[i],&buf)) {
 				traverse(argv[i],restrict,buf.st_dev,sizes);
 			}
 			else { 
